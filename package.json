@@ -3,8 +3,13 @@
   "version": "1.0.0",
   "description": "Submission pertama Backend Fundamental dicoding",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm run build && node ./src/server.js",
+    "start:dev": "nodemon --exec babel-node ./src/server.js",
+    "clean": "rm -rf build && mkdir build",
+    "build-babel": "babel -d ./build ./src/server.js -s",
+    "build": "npm run clean && npm run build-babel"
   },
   "repository": {
     "type": "git",
@@ -18,11 +23,18 @@
   },
   "homepage": "https://github.com/w33h/Open-Music-Api-V1#readme",
   "dependencies": {
+    "@babel/cli": "^7.14.8",
+    "@babel/core": "^7.15.0",
     "@hapi/hapi": "^20.1.5",
     "dotenv": "^10.0.0",
     "nanoid": "^3.1.25"
   },
   "devDependencies": {
+    "@babel/node": "^7.14.9",
+    "@babel/plugin-transform-runtime": "^7.15.0",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.15.0",
+    "@babel/runtime": "^7.15.3",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.24.0"
