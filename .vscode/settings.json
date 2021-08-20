@@ -1,0 +1,34 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "172.17.0.2",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "dev",
+      "database": "musicdb",
+      "username": "devmusic",
+      "password": "devmusic123"
+    },
+    {
+      "previewLimit": 50,
+      "server": "172.17.0.2",
+      "port": 5432,
+      "askForPassword": true,
+      "driver": "PostgreSQL",
+      "name": "dev",
+      "database": "musicdb",
+      "username": "devmusic"
+    },
+    {
+      "previewLimit": 50,
+      "server": "172.17.0.2",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "harly",
+      "database": "musicdb",
+      "username": "devmusic",
+      "password": "devmusic123"
+    }
+  ]
+}

@@ -1,54 +1,43 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-
-var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
-
-var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
-
 var _dotenv = _interopRequireDefault(require("dotenv"));
 
 var _hapi = _interopRequireDefault(require("@hapi/hapi"));
 
-// eslint-disable-next-line import/no-unresolved
-// require('dontenv').config();
-_dotenv["default"].config();
+var _songs = _interopRequireDefault(require("./api/songs"));
 
-var init = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
-    var server;
-    return _regenerator["default"].wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            server = _hapi["default"].Server({
-              port: process.env.PORT,
-              host: process.env.HOST,
-              routes: {
-                cors: {
-                  origin: ['*']
-                }
-              }
-            });
-            _context.next = 3;
-            return server.start();
+var _SongsService = _interopRequireDefault(require("./services/postgres/SongsService"));
 
-          case 3:
-            // eslint-disable-next-line no-console
-            console.log(" \uD83D\uDE80 Server berjalan pada ".concat(server.info.uri));
+var _songs2 = _interopRequireDefault(require("./validator/songs"));
 
-          case 4:
-          case "end":
-            return _context.stop();
-        }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_dotenv.default.config();
+
+const init = async () => {
+  const songsService = new _SongsService.default();
+
+  const server = _hapi.default.Server({
+    port: process.env.PORT,
+    host: process.env.HOST,
+    routes: {
+      cors: {
+        origin: ['*']
       }
-    }, _callee);
-  }));
+    }
+  });
 
-  return function init() {
-    return _ref.apply(this, arguments);
-  };
-}();
+  await server.register({
+    plugin: _songs.default,
+    options: {
+      service: songsService,
+      validator: _songs2.default
+    }
+  });
+  await server.start(); // eslint-disable-next-line no-console
+
+  console.log(` 🚀 Server berjalan pada ${server.info.uri}`);
+};
 
 init();
 //# sourceMappingURL=server.js.map
