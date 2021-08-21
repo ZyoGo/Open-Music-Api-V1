@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "npm run build &&  NODE_ENV=production node --experimental-specifier-resolution=node ./src/server.js",
-    "start:dev": "nodemon --exec babel-node ./src/server.js",
+    "start:dev": "nodemon --experimental-specifier-resolution=node --exec babel-node ./src/server.js",
     "clean": "rm -rf build && mkdir build",
     "build-babel": "babel -d ./build ./src/server.js -s",
     "build": "npm run clean && npm run build-babel",
