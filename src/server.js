@@ -21,7 +21,7 @@ const init = async () => {
   });
 
   server.ext('onPreResponse', (request, h) => {
-    const { response } = Request;
+    const { response } = request;
 
     if (response instanceof ClientError) {
       const newResponse = h.response({
