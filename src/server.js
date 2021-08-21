@@ -3,6 +3,7 @@ import Hapi from '@hapi/hapi';
 import songs from './api/songs';
 import SongsService from './services/postgres/SongsService';
 import SongsValidator from './validator/songs';
+import ClientError from './exceptions/ClientError';
 
 dotenv.config();
 
@@ -17,6 +18,24 @@ const init = async () => {
         origin: ['*'],
       },
     },
+  });
+
+  server.ext('onPreResponse', (request, h) => {
+    const { response } = Request;
+
+    if (response instanceof ClientError) {
+      const newResponse = h.response({
+        status: 'fail',
+
+        message: response.message,
+      });
+
+      newResponse.code(response.statusCode);
+
+      return newResponse;
+    }
+
+    return response.continue || response;
   });
 
   await server.register({
