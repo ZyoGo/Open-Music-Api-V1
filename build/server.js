@@ -10,6 +10,8 @@ var _SongsService = _interopRequireDefault(require("./services/postgres/SongsSer
 
 var _songs2 = _interopRequireDefault(require("./validator/songs"));
 
+var _ClientError = _interopRequireDefault(require("./exceptions/ClientError"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _dotenv.default.config();
@@ -27,6 +29,22 @@ const init = async () => {
     }
   });
 
+  server.ext('onPreResponse', (request, h) => {
+    const {
+      response
+    } = request;
+
+    if (response instanceof _ClientError.default) {
+      const newResponse = h.response({
+        status: 'fail',
+        message: response.message
+      });
+      newResponse.code(response.statusCode);
+      return newResponse;
+    }
+
+    return response.continue || response;
+  });
   await server.register({
     plugin: _songs.default,
     options: {
