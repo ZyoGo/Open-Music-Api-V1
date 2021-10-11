@@ -1,4 +1,4 @@
-import ClientError from './ClientError'
+import ClientError from './ClientError';
 
 class AuthorizationError extends ClientError {
   constructor(message) {
