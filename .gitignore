@@ -1,4 +1,5 @@
 node_modules
+.idea
+subs Backend Fundamental.zip
 .env
 .prod.env
-subs Backend Fundamental.zip
