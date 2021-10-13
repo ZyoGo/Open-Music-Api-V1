@@ -16,7 +16,7 @@ class UsersHandler {
       const userId = await this._service.addUser({
         username,
         password,
-        fullname
+        fullname,
       });
 
       const response = h.response({
@@ -28,7 +28,7 @@ class UsersHandler {
       });
       response.code(201);
       return response;
-    }catch (error) {
+    } catch (error) {
       if (error instanceof ClientError) {
         const response = h.response({
           status: 'fail',
@@ -38,7 +38,7 @@ class UsersHandler {
         return response;
       }
 
-    //  Server ERROR!
+      //  Server ERROR!
       const response = h.response({
         status: 'error',
         message: 'Maaf, terjadi kegagalan pada server kami.',
