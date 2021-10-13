@@ -1,22 +1,30 @@
 import dotenv from 'dotenv';
 import Hapi from '@hapi/hapi';
+import Jwt from '@hapi/jwt';
 import ClientError from './exceptions/ClientError';
 
-dotenv.config();
-
-//Plugin Songs
+// Plugin Songs
 import songs from './api/songs';
 import SongsService from './services/postgres/SongsService';
 import SongsValidator from './validator/songs';
 
-//Plugin Users
+// Plugin Users
 import users from './api/users';
 import UsersService from './services/postgres/UsersService';
 import UserValidator from './validator/users';
 
+// Plugin Authentications
+import authentications from './api/authentications';
+import AuthenticationsService from './services/postgres/AuthenticationsService';
+import TokenManager from './tokenize/TokenManager';
+import AuthenticationsValidator from './validator/authentications';
+
+dotenv.config();
+
 const init = async () => {
   const songsService = new SongsService();
   const usersService = new UsersService();
+  const authenticationsService = new AuthenticationsService();
 
   const server = Hapi.Server({
     port: process.env.PORT,
@@ -28,13 +36,28 @@ const init = async () => {
     },
   });
 
+  await server.register(Jwt);
+
+  server.auth.strategy('openMusic_JWT', 'jwt', {
+    keys: process.env.ACCESS_TOKEN_KEY,
+    verify: {
+      aud: false,
+      iss: false,
+      sub: false,
+      maxAgeSec: process.env.ACCESS_TOKEN_AGE,
+    },
+    validate: (artifacts) => ({
+      isValid: true,
+      credentials: { id: artifacts.decoded.payload.id },
+    }),
+  });
+
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;
 
     if (response instanceof ClientError) {
       const newResponse = h.response({
         status: 'fail',
-
         message: response.message,
       });
 
@@ -59,6 +82,15 @@ const init = async () => {
       options: {
         service: usersService,
         validator: UserValidator,
+      },
+    },
+    {
+      plugin: authentications,
+      options: {
+        authenticationsService,
+        usersService,
+        tokenManager: TokenManager,
+        validator: AuthenticationsValidator,
       },
     },
   ]);
