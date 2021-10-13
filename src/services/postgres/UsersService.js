@@ -13,7 +13,7 @@ class UsersService {
   }
 
   async addUser({ username, password, fullname }) {
-    await this.verifyNewUsername(username)
+    await this.verifyNewUsername(username);
 
     const id = `user-${nanoid(16)}`;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -71,16 +71,16 @@ class UsersService {
     return id;
   }
 
-  async getUsersByUsername(username) {
-    const query = {
-      text: 'SELECT id, username, fullname FROM users WHERE username LIKE $1',
-      values: [`%${username}%`],
-    };
-
-    // eslint-disable-next-line no-underscore-dangle
-    const result = await this._pool.query(query);
-    return result;
-  }
+  // async getUsersByUsername(username) {
+  //   const query = {
+  //     text: 'SELECT id, username, fullname FROM users WHERE username LIKE $1',
+  //     values: [`%${username}%`],
+  //   };
+  //
+  //   // eslint-disable-next-line no-underscore-dangle
+  //   const result = await this._pool.query(query);
+  //   return result;
+  // }
 }
 
 export default UsersService;
