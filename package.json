@@ -27,6 +27,7 @@
     "@babel/cli": "^7.14.8",
     "@babel/core": "^7.15.0",
     "@hapi/hapi": "^20.1.5",
+    "@hapi/jwt": "^2.1.0",
     "auto-bind": "^4.0.0",
     "babel-plugin-import-directory": "^1.1.0",
     "bcrypt": "^5.0.1",
