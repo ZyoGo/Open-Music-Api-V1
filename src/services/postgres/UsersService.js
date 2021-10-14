@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid';
 import bcrypt from 'bcrypt';
 import InvariantError from '../../exceptions/InvariantError';
 import AuthenticationError from '../../exceptions/AuthenticationError';
+import NotFoundError from '../../exceptions/NotFoundError';
 
 const { Pool } = pkg;
 
@@ -31,6 +32,19 @@ class UsersService {
     }
 
     return result.rows[0].id;
+  }
+
+  async getUserById(userId) {
+    const query = {
+      text: 'SELECT id, username, fullname FROM users WHERE id =$1',
+      values: [userId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('User tidak ditemukan');
+    }
   }
 
   async verifyNewUsername(username) {
@@ -70,17 +84,6 @@ class UsersService {
 
     return id;
   }
-
-  // async getUsersByUsername(username) {
-  //   const query = {
-  //     text: 'SELECT id, username, fullname FROM users WHERE username LIKE $1',
-  //     values: [`%${username}%`],
-  //   };
-  //
-  //   // eslint-disable-next-line no-underscore-dangle
-  //   const result = await this._pool.query(query);
-  //   return result;
-  // }
 }
 
 export default UsersService;

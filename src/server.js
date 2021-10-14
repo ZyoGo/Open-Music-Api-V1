@@ -19,12 +19,24 @@ import AuthenticationsService from './services/postgres/AuthenticationsService';
 import TokenManager from './tokenize/TokenManager';
 import AuthenticationsValidator from './validator/authentications';
 
+// Plugin Playlists
+import playlists from './api/playlists';
+import PlaylistsService from './services/postgres/PlaylistsService';
+import PlaylistsValidator from './validator/playlists';
+
+// Plugin Collaborations
+import collaboration from './api/collaborations';
+import CollaborationsService from './services/postgres/CollaborationsService';
+import CollaborationValidator from './validator/collaborations';
+
 dotenv.config();
 
 const init = async () => {
   const songsService = new SongsService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
+  const collaborationsService = new CollaborationsService();
+  const playlistService = new PlaylistsService(collaborationsService);
 
   const server = Hapi.Server({
     port: process.env.PORT,
@@ -36,7 +48,12 @@ const init = async () => {
     },
   });
 
-  await server.register(Jwt);
+  // await server.register(Jwt);
+  await server.register([
+    {
+      plugin: Jwt,
+    },
+  ]);
 
   server.auth.strategy('openMusic_JWT', 'jwt', {
     keys: process.env.ACCESS_TOKEN_KEY,
@@ -48,9 +65,12 @@ const init = async () => {
     },
     validate: (artifacts) => ({
       isValid: true,
-      credentials: { id: artifacts.decoded.payload.id },
+      credentials: {
+        id: artifacts.decoded.payload.id,
+      },
     }),
   });
+  // server.auth.strategy();
 
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;
@@ -91,6 +111,21 @@ const init = async () => {
         usersService,
         tokenManager: TokenManager,
         validator: AuthenticationsValidator,
+      },
+    },
+    {
+      plugin: playlists,
+      options: {
+        service: playlistService,
+        validator: PlaylistsValidator,
+      },
+    },
+    {
+      plugin: collaboration,
+      options: {
+        collaborationsService,
+        playlistService,
+        validator: CollaborationValidator,
       },
     },
   ]);

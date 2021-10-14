@@ -48,6 +48,38 @@ class UsersHandler {
       return response;
     }
   }
+
+  async getUserByIdHandler(request, h) {
+    try {
+      const { id } = request.params;
+      const user = await this._service.getUserById(id);
+
+      return {
+        status: 'success',
+        data: {
+          user,
+        },
+      };
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      //  Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
 }
 
 export default UsersHandler;

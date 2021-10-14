@@ -2,11 +2,12 @@
 /* eslint-disable no-underscore-dangle */
 import pkg from 'pg';
 import { nanoid } from 'nanoid';
-import mapDBToModel from '../../utils/index';
+import { mapDBToModel } from '../../utils/index';
 import InvariantError from '../../exceptions/InvariantError';
 import NotFoundError from '../../exceptions/NotFoundError';
 
 const { Pool } = pkg;
+
 class SongsService {
   constructor() {
     this._pool = new Pool();

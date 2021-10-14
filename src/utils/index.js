@@ -21,4 +21,15 @@ const mapDBToModel = ({
   updatedAt: updated_at,
 });
 
-export default mapDBToModel;
+const mapDBToPlaylist = ({
+  id,
+  name,
+  username,
+}) => ({
+  id, name, username,
+});
+
+export {
+  mapDBToModel,
+  mapDBToPlaylist,
+};
