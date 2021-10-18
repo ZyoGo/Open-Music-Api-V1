@@ -34,9 +34,9 @@ dotenv.config();
 const init = async () => {
   const songsService = new SongsService();
   const usersService = new UsersService();
-  const authenticationsService = new AuthenticationsService();
   const collaborationsService = new CollaborationsService();
-  const playlistService = new PlaylistsService(collaborationsService);
+  const playlistsService = new PlaylistsService(collaborationsService);
+  const authenticationsService = new AuthenticationsService();
 
   const server = Hapi.Server({
     port: process.env.PORT,
@@ -84,6 +84,19 @@ const init = async () => {
       newResponse.code(response.statusCode);
 
       return newResponse;
+    } if (response instanceof Error) {
+      const { statusCode, payload } = request.output;
+      if (statusCode === 401) {
+        return h.response(payload).code(401);
+      }
+
+      const newResponse = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami',
+      });
+      console.log(response);
+      newResponse.code(500);
+      return newResponse;
     }
 
     return response.continue || response;
@@ -116,7 +129,7 @@ const init = async () => {
     {
       plugin: playlists,
       options: {
-        service: playlistService,
+        service: playlistsService,
         validator: PlaylistsValidator,
       },
     },
@@ -124,7 +137,7 @@ const init = async () => {
       plugin: collaboration,
       options: {
         collaborationsService,
-        playlistService,
+        playlistsService,
         validator: CollaborationValidator,
       },
     },
