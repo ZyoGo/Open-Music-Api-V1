@@ -19,7 +19,7 @@ class CollaborationHandler {
 
       await this._playlistsService.verifyPlaylistOwner(playlistId, credentialsId);
       // eslint-disable-next-line max-len
-      const collaborationId = await this._collaborationsService.addToCollaboration(playlistId, userId);
+      const collaborationId = await this._collaborationsService.addCollaboration(playlistId, userId);
 
       const response = h.response({
         status: 'success',
