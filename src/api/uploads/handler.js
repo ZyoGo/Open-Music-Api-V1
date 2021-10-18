@@ -1,3 +1,5 @@
+import ClientError from '../../exceptions/ClientError';
+
 class UploadsHandler {
   constructor(service, validator) {
     this._service = service;
@@ -7,18 +9,38 @@ class UploadsHandler {
   }
 
   async postImageHandler(request, h) {
-    const { data } = request.payload;
-    this._validator.validateImageHeader(data.hapi.headers);
+    try {
+      const { data } = request.payload;
+      this._validator.validateImageHeader(data.hapi.headers);
 
-    const fileName = await this._service.writeFile(data, data.hapi);
-    const response = h.response({
-      status: 'success',
-      data: {
-        fileLocation: `http://${process.env.HOST}:${process.env.PORT}/upload/images/${fileName}`,
-      },
-    });
-    response.code(201);
-    return response;
+      const fileName = await this._service.writeFile(data, data.hapi);
+      const response = h.response({
+        status: 'success',
+        data: {
+          pictureUrl: `http://${process.env.HOST}:${process.env.PORT}/upload/images/${fileName}`,
+        },
+      });
+      response.code(201);
+      return response;
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      //  Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
   }
 }
 

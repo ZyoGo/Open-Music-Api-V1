@@ -1,5 +1,5 @@
-// eslint-disable-next-line import/no-duplicates
 import fs from 'fs';
+// import path from 'path';
 
 class StorageService {
   constructor(folder) {
@@ -12,9 +12,9 @@ class StorageService {
 
   writeFile(file, meta) {
     const fileName = +new Date() + meta.filename;
-    const path = `${this._folder}/${fileName}`;
+    const pathFile = `${this._folder}/${fileName}`;
 
-    const fileStream = fs.createWriteStream(path);
+    const fileStream = fs.createWriteStream(pathFile);
 
     return new Promise((resolve, reject) => {
       fileStream.on('error', (error) => reject(error));
