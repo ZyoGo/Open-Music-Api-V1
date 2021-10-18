@@ -1,10 +1,11 @@
 import dotenv from 'dotenv';
 import Hapi from '@hapi/hapi';
 import Jwt from '@hapi/jwt';
-import path from 'path';
+// import path from 'path';
+import * as path from 'path';
 import ClientError from './exceptions/ClientError';
-const __dirname = path.resolve();
-// const fileLoc = 'api/uploads/file/images';
+const __dirname = path.resolve('src');
+const fileLoc = 'api/uploads/file/images';
 
 // Plugin Songs
 import songs from './api/songs';
@@ -45,7 +46,7 @@ const init = async () => {
   const collaborationsService = new CollaborationsService();
   const playlistsService = new PlaylistsService(collaborationsService);
   const authenticationsService = new AuthenticationsService();
-  const storageService = new StorageService(path.resolve(__dirname, 'api/uploads/file/images'));
+  const storageService = new StorageService(path.resolve(__dirname, fileLoc));
 
   const server = Hapi.Server({
     port: process.env.PORT,

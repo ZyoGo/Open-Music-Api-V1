@@ -1,11 +1,13 @@
 import fs from 'fs';
-// import path from 'path';
+import path from 'path';
 
 class StorageService {
   constructor(folder) {
     this._folder = folder;
 
     if (!fs.existsSync(folder)) {
+      // const __dirname = path.resolve();
+      // path.resolve(__dirname, folder);
       fs.mkdirSync(folder, { recursive: true });
     }
   }

@@ -1,6 +1,6 @@
-// import path from 'path';
+import path from 'path';
 
-// const __dirname = path.resolve();
+const __dirname = path.resolve('uploads');
 
 const routes = (handler) => [
   {
@@ -16,15 +16,15 @@ const routes = (handler) => [
       },
     },
   },
-  // {
-  //   method: 'GET',
-  //   path: '/upload/{param*}',
-  //   handler: {
-  //     directory: {
-  //       path: path.resolve(__dirname, 'file')
-  //     }
-  //   }
-  // },
+  {
+    method: 'GET',
+    path: '/upload/{param*}',
+    handler: {
+      directory: {
+        path: path.resolve(__dirname, 'file'),
+      },
+    },
+  },
 ];
 
 export default routes;
