@@ -39,6 +39,12 @@ import UploadsValidator from './validator/uploads';
 // PLugin Redis
 import CacheService from './services/redis/CacheService';
 
+// Plugin Exports Songs
+import _exports from './api/exports';
+import ProducerService from './services/rabbitmq/ProducerService';
+import ExportsValidator from './validator/exports';
+
+// eslint-disable-next-line no-underscore-dangle
 const __dirname = path.resolve('src');
 const fileLoc = 'api/uploads/file/images';
 dotenv.config();
@@ -91,18 +97,29 @@ const init = async () => {
 
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;
-
     if (response instanceof ClientError) {
       const newResponse = h.response({
         status: 'fail',
         message: response.message,
       });
-
       newResponse.code(response.statusCode);
-
+      return newResponse;
+    } if (response instanceof Error) {
+      const { statusCode, payload } = response.output;
+      if (statusCode === 401) {
+        return h.response(payload).code(401);
+      }
+      if (statusCode === 413) {
+        return h.response(payload).code(413);
+      }
+      const newResponse = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      console.log(response);
+      newResponse.code(500);
       return newResponse;
     }
-
     return response.continue || response;
   });
 
@@ -150,6 +167,14 @@ const init = async () => {
       options: {
         service: storageService,
         validator: UploadsValidator,
+      },
+    },
+    {
+      plugin: _exports,
+      options: {
+        service: ProducerService,
+        playlistsService,
+        validator: ExportsValidator,
       },
     },
   ]);
