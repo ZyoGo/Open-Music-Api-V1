@@ -1,6 +1,6 @@
 import path from 'path';
-
-const __dirname = path.resolve('uploads');
+// eslint-disable-next-line no-underscore-dangle
+const __dirname = path.resolve('src/api/uploads');
 
 const routes = (handler) => [
   {
