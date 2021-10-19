@@ -1,11 +1,9 @@
 import dotenv from 'dotenv';
 import Hapi from '@hapi/hapi';
 import Jwt from '@hapi/jwt';
-// import path from 'path';
-import * as path from 'path';
+import Inert from '@hapi/inert';
+import path from 'path';
 import ClientError from './exceptions/ClientError';
-const __dirname = path.resolve('src');
-const fileLoc = 'api/uploads/file/images';
 
 // Plugin Songs
 import songs from './api/songs';
@@ -38,13 +36,19 @@ import uploads from './api/uploads';
 import StorageService from './services/storage/StorageService';
 import UploadsValidator from './validator/uploads';
 
+// PLugin Redis
+import CacheService from './services/redis/CacheService';
+
+const __dirname = path.resolve('src');
+const fileLoc = 'api/uploads/file/images';
 dotenv.config();
 
 const init = async () => {
   const songsService = new SongsService();
   const usersService = new UsersService();
-  const collaborationsService = new CollaborationsService();
-  const playlistsService = new PlaylistsService(collaborationsService);
+  const cacheService = new CacheService();
+  const collaborationsService = new CollaborationsService(cacheService);
+  const playlistsService = new PlaylistsService(collaborationsService, cacheService);
   const authenticationsService = new AuthenticationsService();
   const storageService = new StorageService(path.resolve(__dirname, fileLoc));
 
@@ -62,6 +66,9 @@ const init = async () => {
   await server.register([
     {
       plugin: Jwt,
+    },
+    {
+      plugin: Inert,
     },
   ]);
 
